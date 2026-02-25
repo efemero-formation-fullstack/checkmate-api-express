@@ -26,10 +26,12 @@ const Tournament = sequelize.define("Tournament", {
 	minElo: {
 		type: DataTypes.INTEGER,
 		allowNull: false,
+		defaultValue: 0,
 	},
 	maxElo: {
 		type: DataTypes.INTEGER,
 		allowNull: false,
+		defaultValue: 3000,
 	},
 	status: {
 		type: DataTypes.ENUM("waiting", "started", "finished", "canceled"),

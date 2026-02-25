@@ -53,4 +53,19 @@ tournamentRouter.post(
 	tournamentController.participate,
 );
 
+// unregister connected user from tournament
+tournamentRouter.post(
+	"/:id/leave",
+	connected(),
+	tournamentController.unparticipate,
+);
+
+// unregister user from tournament by admin
+tournamentRouter.post(
+	"/:id/unregister",
+	connected(["admin"]),
+	bodyValidator(registerTournamentValidator),
+	tournamentController.unparticipate,
+);
+
 export default tournamentRouter;

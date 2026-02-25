@@ -8,8 +8,10 @@ import {
 	PlayerAlreadyRegisteredError,
 	PlayerIsOutOfEloRangeError,
 	PlayerIsOutOfTheCategoriesError,
+	PlayerNotRegisteredToTournamentError,
 	RegistrationClosedError,
 	TournamentAlreadyStartedError,
+	TournamentIsFullError,
 	TournamentIsWomenOnlyError,
 	TournamentNotFoundError,
 } from "../custom-errors/tournament.error.js";
@@ -75,6 +77,8 @@ const tournamentService = {
 	},
 
 	getAll: async (filter, pagination) => {
+		// TODO: add a check for the requester (to get a boolean "canRegister" and "isRegistered" for each tournament)
+
 		const where = {};
 
 		if (filter) {
@@ -245,7 +249,38 @@ const tournamentService = {
 			}
 		}
 
+		// check the number of players already registered in the tournament
+		const nbrOfPlayers = await tournament.countPlayers();
+		if (nbrOfPlayers >= tournament.maxPlayers) {
+			throw new TournamentIsFullError();
+		}
+
 		await tournament.addPlayers(player);
+	},
+
+	unparticipate: async (tournamentId, playerId) => {
+		const tournament = await db.Tournament.findByPk(tournamentId);
+		if (!tournament) {
+			throw new TournamentNotFoundError();
+		}
+
+		const player = await db.Member.findByPk(playerId);
+		if (!player) {
+			throw new MemberNotFoundError();
+		}
+
+		// check if the player is registered in the tournament
+		const isRegistered = await tournament.hasPlayers(player);
+		if (!isRegistered) {
+			throw new PlayerNotRegisteredToTournamentError();
+		}
+
+		// check if the tournament has already started
+		if (tournament.status !== "waiting") {
+			throw new TournamentAlreadyStartedError();
+		}
+
+		await tournament.removePlayers(player);
 	},
 };
 

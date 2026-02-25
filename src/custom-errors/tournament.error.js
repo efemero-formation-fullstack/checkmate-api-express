@@ -81,3 +81,19 @@ export class TournamentAlreadyStartedError extends Error {
 		super("Tournament has already started.");
 	}
 }
+
+export class TournamentIsFullError extends Error {
+	statusCode = 400;
+
+	constructor() {
+		super("Tournament is already full.");
+	}
+}
+
+export class PlayerNotRegisteredToTournamentError extends Error {
+	statusCode = 400;
+
+	constructor() {
+		super("Player is not registered for this tournament.");
+	}
+}

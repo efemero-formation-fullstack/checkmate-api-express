@@ -1,4 +1,7 @@
-import { TournamentListingDto } from "../dtos/tournament.dto.js";
+import {
+	TournamentDetailsDto,
+	TournamentListingDto,
+} from "../dtos/tournament.dto.js";
 import tournamentService from "../services/tournament.service.js";
 
 const tournamentController = {
@@ -56,6 +59,19 @@ const tournamentController = {
 		res.json({
 			total: count,
 			data: tournamentDtos,
+		});
+	},
+
+	getById: async (req, res) => {
+		const tournamentId = +req.params.id;
+		const tournament = await tournamentService.getById(tournamentId);
+
+		if (!tournament) {
+			return res.status(404).json({ message: "Tournament not found" });
+		}
+
+		res.status(200).json({
+			data: new TournamentDetailsDto(tournament),
 		});
 	},
 

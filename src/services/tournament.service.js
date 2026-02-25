@@ -160,6 +160,40 @@ const tournamentService = {
 		return { tournaments, count };
 	},
 
+	getById: async tournamentId => {
+		const tournament = await db.Tournament.findByPk(tournamentId, {
+			include: [
+				{
+					model: db.Category,
+					as: "categories",
+				},
+				{
+					model: db.Member,
+					as: "players",
+					through: { attributes: [] }, // to exclude the join table attributes
+				},
+				{
+					model: db.Match,
+					as: "matches",
+					include: [
+						{
+							model: db.Member,
+							as: "whitePlayer",
+						},
+						{
+							model: db.Member,
+							as: "blackPlayer",
+						},
+					],
+				},
+			],
+		});
+		if (!tournament) {
+			throw new TournamentNotFoundError();
+		}
+		return tournament;
+	},
+
 	participate: async (tournamentId, playerId) => {
 		const tournament = await db.Tournament.findByPk(tournamentId);
 		if (!tournament) {

@@ -35,6 +35,9 @@ tournamentRouter.get(
 	tournamentController.getAll,
 );
 
+// get tournament details
+tournamentRouter.get("/:id", tournamentController.getById);
+
 // register connected user to tournament
 tournamentRouter.post(
 	"/:id/join",

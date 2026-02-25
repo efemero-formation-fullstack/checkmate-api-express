@@ -1,4 +1,6 @@
 import { CategoryListingDto } from "./category.dto.js";
+import { MatchListingDto } from "./match.dto.js";
+import { MemberListingDto } from "./member.dto.js";
 
 export class TournamentListingDto {
 	id;
@@ -32,3 +34,40 @@ export class TournamentListingDto {
 	}
 }
 
+export class TournamentDetailsDto {
+	id;
+	name;
+	location;
+	nbrOfPlayers;
+	minPlayers;
+	maxPlayers;
+	categories;
+	minElo;
+	maxElo;
+	status;
+	endRegistrationDate;
+	currentRound;
+	players;
+	currentMatches;
+
+	constructor(tournament) {
+		this.id = tournament.id;
+		this.name = tournament.name;
+		this.location = tournament.location;
+		this.nbrOfPlayers = tournament.nbrOfPlayers;
+		this.minPlayers = tournament.minPlayers;
+		this.maxPlayers = tournament.maxPlayers;
+		this.categories = tournament.categories.map(category => category.name);
+		this.minElo = tournament.minElo;
+		this.maxElo = tournament.maxElo;
+		this.status = tournament.status;
+		this.endRegistrationDate = tournament.endRegistrationDate;
+		this.currentRound = tournament.currentRound;
+		this.players = tournament.players.map(
+			player => new MemberListingDto(player),
+		);
+		this.currentMatches = tournament.matches.map(
+			match => new MatchListingDto(match),
+		);
+	}
+}

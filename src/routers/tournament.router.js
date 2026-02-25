@@ -17,6 +17,13 @@ tournamentRouter.post(
 	tournamentController.create,
 );
 
+// delete tournament
+tournamentRouter.delete(
+	"/:id",
+	connected(["admin"]),
+	tournamentController.delete,
+);
+
 // register connected user to tournament
 tournamentRouter.post(
 	"/:id/join",

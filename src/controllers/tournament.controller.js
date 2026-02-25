@@ -8,6 +8,17 @@ const tournamentController = {
 			data: newTournament,
 		});
 	},
+
+	delete: async (req, res) => {
+		const tournamentId = +req.params.id;
+
+		const players = await tournamentService.delete(tournamentId);
+
+		// TODO send email to the members registered to the tournament to inform them that the tournament has been canceled
+
+		res.status(204).send();
+	},
+
 	participate: async (req, res) => {
 		const tournamentId = +req.params.id;
 		let { memberId } = req.data || {};

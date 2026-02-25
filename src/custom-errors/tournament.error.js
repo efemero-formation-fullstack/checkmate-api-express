@@ -73,3 +73,11 @@ export class PlayerIsOutOfTheCategoriesError extends Error {
 		super("Player does not belong to any of the tournament's categories.");
 	}
 }
+
+export class TournamentAlreadyStartedError extends Error {
+	statusCode = 400;
+
+	constructor() {
+		super("Tournament has already started.");
+	}
+}

@@ -9,6 +9,7 @@ import {
 	PlayerIsOutOfEloRangeError,
 	PlayerIsOutOfTheCategoriesError,
 	RegistrationClosedError,
+	TournamentAlreadyStartedError,
 	TournamentIsWomenOnlyError,
 	TournamentNotFoundError,
 } from "../custom-errors/tournament.error.js";
@@ -54,6 +55,22 @@ const tournamentService = {
 		await newTournament.addCategories(categories);
 
 		return newTournament;
+	},
+
+	delete: async tournamentId => {
+		const tournament = await db.Tournament.findByPk(tournamentId);
+		if (!tournament) {
+			throw new TournamentNotFoundError();
+		}
+
+		if (tournament.status !== "waiting") {
+			throw new TournamentAlreadyStartedError();
+		}
+
+		const players = await tournament.getPlayers();
+
+		await tournament.destroy();
+		return players;
 	},
 
 	participate: async (tournamentId, playerId) => {

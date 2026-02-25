@@ -1,3 +1,4 @@
+import { TournamentListingDto } from "../dtos/tournament.dto.js";
 import tournamentService from "../services/tournament.service.js";
 
 const tournamentController = {
@@ -17,6 +18,45 @@ const tournamentController = {
 		// TODO send email to the members registered to the tournament to inform them that the tournament has been canceled
 
 		res.status(204).send();
+	},
+
+	getAll: async (req, res) => {
+		const {
+			name,
+			location,
+			minElo,
+			maxElo,
+			fitElo,
+			womenOnly,
+			fromDate,
+			offset,
+			limit,
+			sortBy,
+			sortOrder,
+		} = req.validatedQuery || {};
+		const filter = {
+			name,
+			location,
+			minElo,
+			maxElo,
+			fitElo,
+			womenOnly,
+			fromDate,
+		};
+		const pagination = { offset, limit, sortBy, sortOrder };
+
+		const { tournaments, count } = await tournamentService.getAll(
+			filter,
+			pagination,
+		);
+		const tournamentDtos = tournaments.map(
+			tournament => new TournamentListingDto(tournament),
+		);
+
+		res.json({
+			total: count,
+			data: tournamentDtos,
+		});
 	},
 
 	participate: async (req, res) => {

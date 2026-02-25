@@ -15,6 +15,7 @@ import {
 } from "../custom-errors/tournament.error.js";
 import { CategoryNotFoundError } from "../custom-errors/category.error.js";
 import { MemberNotFoundError } from "../custom-errors/member.error.js";
+import { Op } from "sequelize";
 
 dayjs.extend(isSameOrBefore);
 
@@ -71,6 +72,92 @@ const tournamentService = {
 
 		await tournament.destroy();
 		return players;
+	},
+
+	getAll: async (filter, pagination) => {
+		const where = {};
+
+		if (filter) {
+			if (filter.name) {
+				where.name = { [Op.iLike]: `%${filter.name}%` };
+			}
+
+			if (filter.location) {
+				where.location = { [Op.iLike]: `%${filter.location}%` };
+			}
+
+			if (filter.minElo) {
+				where.minElo = { [Op.gte]: filter.minElo };
+			}
+
+			if (filter.maxElo) {
+				where.maxElo = { [Op.lte]: filter.maxElo };
+			}
+
+			if (filter.fitElo) {
+				if (filter.fitElo && !where.minElo && !where.maxElo) {
+					where.minElo = { [Op.lte]: filter.fitElo };
+					where.maxElo = { [Op.gte]: filter.fitElo };
+				} else {
+					const fitEloAnd = [
+						{
+							minElo: { [Op.lte]: filter.fitElo },
+							maxElo: { [Op.gte]: filter.fitElo },
+						},
+					];
+					if (where.minElo) {
+						fitEloAnd.push({ minElo: where.minElo });
+						delete where.minElo;
+					}
+					if (where.maxElo) {
+						fitEloAnd.push({ maxElo: where.maxElo });
+						delete where.maxElo;
+					}
+					where[Op.and] = fitEloAnd;
+				}
+			}
+
+			if (filter.womenOnly) {
+				where.womenOnly = true;
+			}
+
+			if (filter.fromDate) {
+				where.endRegistrationDate = { [Op.gte]: filter.fromDate };
+			}
+		}
+
+		const order = [];
+		if (pagination) {
+			if (pagination.sortBy) {
+				order.push([pagination.sortBy, pagination.sortOrder || "ASC"]);
+			}
+		} else {
+			order.push(["registrationDate", "DESC"]);
+		}
+
+		// find all tournaments with the specified filters and pagination
+		let { rows: tournaments, count } = await db.Tournament.findAndCountAll({
+			where,
+			order,
+			include: [
+				{
+					model: db.Category,
+					as: "categories",
+				},
+			],
+			limit: pagination?.limit || 20,
+			offset: pagination?.offset || 0,
+			distinct: true, // to avoid counting duplicates when a tournament has multiple categories
+		});
+
+		// count the number of players for each tournament and add it to the tournament object
+		const promises = tournaments.map(async tournament => {
+			tournament.nbrOfPlayers = await tournament.countPlayers();
+			return tournament;
+		});
+		tournaments = await Promise.all(promises);
+
+		return { tournaments, count };
 	},
 
 	participate: async (tournamentId, playerId) => {

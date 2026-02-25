@@ -1,9 +1,13 @@
 import { Router } from "express";
 import tournamentController from "../controllers/tournament.controller.js";
-import { bodyValidator } from "../middlewares/validator.middleware.js";
+import {
+	bodyValidator,
+	queryValidator,
+} from "../middlewares/validator.middleware.js";
 import { connected } from "../middlewares/auth.middleware.js";
 import {
 	createTournamentValidator,
+	getAllTournamentsValidator,
 	registerTournamentValidator,
 } from "../validators/tournament.validator.js";
 
@@ -22,6 +26,13 @@ tournamentRouter.delete(
 	"/:id",
 	connected(["admin"]),
 	tournamentController.delete,
+);
+
+// get all tournaments
+tournamentRouter.get(
+	"/",
+	queryValidator(getAllTournamentsValidator),
+	tournamentController.getAll,
 );
 
 // register connected user to tournament

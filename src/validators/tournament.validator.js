@@ -11,3 +11,7 @@ export const createTournamentValidator = z.object({
 	endRegistrationDate: z.iso.date(),
 	categories: z.array(z.number().int()).optional(),
 });
+
+export const registerTournamentValidator = z.object({
+	memberId: z.uuid(),
+});

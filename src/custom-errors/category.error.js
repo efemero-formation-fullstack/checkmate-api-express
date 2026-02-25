@@ -1,5 +1,5 @@
 export class CategoryNotFoundError extends Error {
-	statusCode = 400;
+	statusCode = 404;
 
 	constructor() {
 		super(

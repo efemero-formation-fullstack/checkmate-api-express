@@ -25,3 +25,51 @@ export class InvalidEndRegistrationDateError extends Error {
 		);
 	}
 }
+
+export class TournamentNotFoundError extends Error {
+	statusCode = 404;
+
+	constructor() {
+		super("Tournament not found.");
+	}
+}
+
+export class RegistrationClosedError extends Error {
+	statusCode = 400;
+
+	constructor() {
+		super("Tournament registration is closed.");
+	}
+}
+
+export class TournamentIsWomenOnlyError extends Error {
+	statusCode = 400;
+
+	constructor() {
+		super("Tournament is women only.");
+	}
+}
+
+export class PlayerIsOutOfEloRangeError extends Error {
+	statusCode = 400;
+
+	constructor() {
+		super("Player's ELO is out of the tournament's ELO range.");
+	}
+}
+
+export class PlayerAlreadyRegisteredError extends Error {
+	statusCode = 400;
+
+	constructor() {
+		super("Player is already registered for this tournament.");
+	}
+}
+
+export class PlayerIsOutOfTheCategoriesError extends Error {
+	statusCode = 400;
+
+	constructor() {
+		super("Player does not belong to any of the tournament's categories.");
+	}
+}

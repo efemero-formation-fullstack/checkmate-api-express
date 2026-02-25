@@ -21,3 +21,11 @@ export class InvalidCredentialError extends Error {
 		super("Invalid username/email or password");
 	}
 }
+
+export class MemberNotFoundError extends Error {
+	statusCode = 404;
+
+	constructor() {
+		super("Member not found.");
+	}
+}

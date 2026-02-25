@@ -2,7 +2,7 @@
 import jwt from "jsonwebtoken";
 
 // Extraction de la clé secrète depuis les variables d'environnement (indispensable pour signer le token)
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET, JWT_EXPIRATION } = process.env;
 
 /**
  * Génère un nouveau token JWT pour un utilisateur donné.
@@ -18,7 +18,7 @@ export const generateToken = user => {
 	// Création du token signé
 	const token = jwt.sign(payload, JWT_SECRET, {
 		// Définit la durée de validité du token (ici 2 heures : 60s * 60m * 2)
-		expiresIn: 60 * 60 * 2,
+		expiresIn: +JWT_EXPIRATION,
 	});
 
 	return token;

@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import db from "../database/index.js";
 import {
 	EmailAlreadyExistsError,
+	InvalidCredentialError,
 	UsernameAlreadyExistsError,
 } from "../custom-errors/member.error.js";
 
@@ -36,6 +37,25 @@ const memberService = {
 		const createdMember = await db.Member.create(data);
 
 		return createdMember;
+	},
+	login: async (username, email, password) => {
+		let member = null;
+		if (username) {
+			member = await db.Member.findOne({ where: { username } });
+		} else {
+			member = await db.Member.findOne({ where: { email } });
+		}
+
+		if (!member) {
+			throw new InvalidCredentialError();
+		}
+
+		const isPasswordValid = await bcrypt.compare(password, member.password);
+		if (!isPasswordValid) {
+			throw new InvalidCredentialError();
+		}
+
+		return member;
 	},
 };
 

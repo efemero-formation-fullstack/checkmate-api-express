@@ -9,6 +9,7 @@ import {
 	TournamentNotFoundError,
 } from "../custom-errors/tournament.error.js";
 import db from "../database/index.js";
+import { Op } from "sequelize";
 
 export const isMemberRegisteredToTournament = async (
 	tournamentId,
@@ -78,4 +79,74 @@ export const canMemberRegisterToTournament = async (tournamentId, memberId) => {
 	if (nbrOfPlayers >= tournament.maxPlayers) {
 		throw new TournamentIsFullError();
 	}
+};
+
+export const computePlayerScoreInATournament = async (
+	tournamentId,
+	playerId,
+) => {
+	const matches = await db.Match.findAll({
+		where: {
+			tournamentId: tournamentId,
+			result: {
+				[Op.ne]: null,
+			},
+			[Op.or]: [{ whitePlayerId: playerId }, { blackPlayerId: playerId }],
+		},
+	});
+
+	console.log(matches);
+
+	/*
+        - Count the number of victory
+        - Count the number of draw
+        - Count the number of defeat
+        - Compute the score: 1pt for a victory, 0.5pt for a draw, 0pt for a defeat and 0pt for a bye
+    */
+
+	let victory = 0;
+	let draw = 0;
+	let defeat = 0;
+	let bye = 0;
+
+	matches.forEach(match => {
+		if (match.whitePlayerId === playerId) {
+			if (match.result === "white_win") {
+				victory++;
+			} else if (match.result === "draw") {
+				draw++;
+			} else if (match.result === "black_win") {
+				defeat++;
+			} else if (match.result === "bye") {
+				bye++;
+			}
+		} else if (match.blackPlayerId === playerId) {
+			if (match.result === "black_win") {
+				victory++;
+			} else if (match.result === "draw") {
+				draw++;
+			} else if (match.result === "white_win") {
+				defeat++;
+			} else if (match.result === "bye") {
+				bye++;
+			}
+		}
+	});
+
+	console.log({
+		victory,
+		draw,
+		defeat,
+		bye,
+	});
+
+	const score = victory * 1 + draw * 0.5 + defeat * 0 + bye * 0.5;
+
+	return {
+		victory,
+		draw,
+		defeat,
+		bye,
+		score,
+	};
 };

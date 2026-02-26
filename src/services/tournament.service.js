@@ -9,6 +9,7 @@ import {
 	PlayerNotRegisteredToTournamentError,
 	TournamentAlreadyStartedError,
 	TournamentNotFoundError,
+	TournamentNotStartedError,
 } from "../custom-errors/tournament.error.js";
 import { CategoryNotFoundError } from "../custom-errors/category.error.js";
 import { MemberNotFoundError } from "../custom-errors/member.error.js";
@@ -16,8 +17,10 @@ import { Op } from "sequelize";
 import { shuffle } from "../utils/array.utils.js";
 import {
 	canMemberRegisterToTournament,
+	computePlayerScoreInATournament,
 	isMemberRegisteredToTournament,
 } from "../utils/tournament.utils.js";
+import { includes } from "zod";
 
 dayjs.extend(isSameOrBefore);
 
@@ -380,6 +383,85 @@ const tournamentService = {
 
 		tournament.currentRound++;
 		await tournament.save();
+	},
+
+	scoreOfPlayer: async (tournamentId, playerId) => {
+		const player = await db.Member.findByPk(playerId);
+		if (!player) {
+			throw new MemberNotFoundError();
+		}
+
+		const tournament = await db.Tournament.findByPk(tournamentId);
+		if (!tournament) {
+			throw new TournamentNotFoundError();
+		}
+
+		if (tournament.status === "waiting") {
+			throw new TournamentNotStartedError();
+		}
+
+		const score = await computePlayerScoreInATournament(
+			tournamentId,
+			playerId,
+		);
+
+		score.player = player;
+
+		return score;
+	},
+
+	allPlayersScores: async tournamentId => {
+		const tournament = await db.Tournament.findByPk(tournamentId);
+		if (!tournament) {
+			throw new TournamentNotFoundError();
+		}
+
+		if (tournament.status === "waiting") {
+			throw new TournamentNotStartedError();
+		}
+
+		const players = await tournament.getPlayers();
+		const scorePromises = players.map(async player => {
+			const score = await computePlayerScoreInATournament(
+				tournamentId,
+				player.id,
+			);
+
+			score.player = player;
+
+			return score;
+		});
+
+		const scores = await Promise.all(scorePromises);
+
+		return scores.sort((a, b) => b.score - a.score);
+	},
+
+	getCurrentRoundMatches: async tournamentId => {
+		const tournament = await db.Tournament.findByPk(tournamentId);
+		if (!tournament) {
+			throw new TournamentNotFoundError();
+		}
+
+		if (tournament.status === "waiting") {
+			throw new TournamentNotStartedError();
+		}
+
+		const matches = await tournament.getMatches({
+			where: { round: tournament.currentRound },
+			include: [
+				{
+					model: db.Member,
+					as: "whitePlayer",
+				},
+				{
+					model: db.Member,
+					as: "blackPlayer",
+				},
+			],
+		});
+
+		return { currentRound: tournament.currentRound, matches };
 	},
 };
 

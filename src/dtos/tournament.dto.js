@@ -83,3 +83,31 @@ export class TournamentDetailsDto {
 		this.canRegister = tournament.canRegister;
 	}
 }
+
+export class PlayerScoreDto {
+	player;
+	score;
+	victory;
+	draw;
+	defeat;
+	bye;
+
+	constructor(score) {
+		this.player = new MemberListingDto(score.player);
+		this.score = score.score;
+		this.victory = score.victory;
+		this.draw = score.draw;
+		this.defeat = score.defeat;
+		this.bye = score.bye;
+	}
+}
+
+export class CurrentRoundMatches {
+	currentRound;
+	matches;
+
+	constructor(currentRound, matches) {
+		this.currentRound = currentRound;
+		this.matches = matches.map(match => new MatchListingDto(match));
+	}
+}

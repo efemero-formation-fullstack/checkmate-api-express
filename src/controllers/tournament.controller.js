@@ -1,4 +1,6 @@
 import {
+	CurrentRoundMatches,
+	PlayerScoreDto,
 	TournamentDetailsDto,
 	TournamentListingDto,
 } from "../dtos/tournament.dto.js";
@@ -129,6 +131,41 @@ const tournamentController = {
 		// TODO send email to the members registered to the tournament to inform them that the next round has started
 
 		res.status(204).send();
+	},
+
+	scoreOfPlayer: async (req, res) => {
+		const tournamentId = +req.params.id;
+		const playerId = req.params.playerId;
+
+		const score = await tournamentService.scoreOfPlayer(
+			tournamentId,
+			playerId,
+		);
+
+		res.status(200).json({
+			data: new PlayerScoreDto(score),
+		});
+	},
+
+	allPlayersScores: async (req, res) => {
+		const tournamentId = +req.params.id;
+
+		const scores = await tournamentService.allPlayersScores(tournamentId);
+
+		res.status(200).json({
+			data: scores.map(score => new PlayerScoreDto(score)),
+		});
+	},
+
+	getCurrentRoundMatches: async (req, res) => {
+		const tournamentId = +req.params.id;
+
+		const { currentRound, matches } =
+			await tournamentService.getCurrentRoundMatches(tournamentId);
+
+		res.status(200).json({
+			data: new CurrentRoundMatches(currentRound, matches),
+		});
 	},
 };
 

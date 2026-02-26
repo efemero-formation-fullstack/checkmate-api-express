@@ -1,3 +1,4 @@
+console.clear();
 // Charge les variables d'environnement du fichier .env dans process.env
 import "dotenv/config";
 

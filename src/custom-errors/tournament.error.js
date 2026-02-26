@@ -113,3 +113,11 @@ export class NotAllMatchesHaveAResultError extends Error {
 		super("Not all matches have a result.");
 	}
 }
+
+export class TournamentNotStartedError extends Error {
+	statusCode = 400;
+
+	constructor() {
+		super("Tournament has not started yet.");
+	}
+}

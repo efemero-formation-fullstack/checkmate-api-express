@@ -82,4 +82,19 @@ tournamentRouter.patch(
 	tournamentController.nextRound,
 );
 
+// get score of a player in a tournament
+tournamentRouter.get(
+	"/:id/score/:playerId",
+	tournamentController.scoreOfPlayer,
+);
+
+// get all players scores in a tournament
+tournamentRouter.get("/:id/scores", tournamentController.allPlayersScores);
+
+// get current round matches
+tournamentRouter.get(
+	"/:id/current-round-matches",
+	tournamentController.getCurrentRoundMatches,
+);
+
 export default tournamentRouter;

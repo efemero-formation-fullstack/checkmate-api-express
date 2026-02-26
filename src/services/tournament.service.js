@@ -190,13 +190,15 @@ const tournamentService = {
 							as: "blackPlayer",
 						},
 					],
-					order: [["round", "ASC"]],
 				},
 			],
 		});
 		if (!tournament) {
 			throw new TournamentNotFoundError();
 		}
+
+		// order matches by round
+		tournament.matches.sort((a, b) => a.round - b.round);
 		return tournament;
 	},
 

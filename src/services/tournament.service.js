@@ -6,20 +6,18 @@ import {
 	InvalidEndRegistrationDateError,
 	InvalidNumberOfPlayerError,
 	NotAllMatchesHaveAResultError,
-	PlayerAlreadyRegisteredError,
-	PlayerIsOutOfEloRangeError,
-	PlayerIsOutOfTheCategoriesError,
 	PlayerNotRegisteredToTournamentError,
-	RegistrationClosedError,
 	TournamentAlreadyStartedError,
-	TournamentIsFullError,
-	TournamentIsWomenOnlyError,
 	TournamentNotFoundError,
 } from "../custom-errors/tournament.error.js";
 import { CategoryNotFoundError } from "../custom-errors/category.error.js";
 import { MemberNotFoundError } from "../custom-errors/member.error.js";
 import { Op } from "sequelize";
 import { shuffle } from "../utils/array.utils.js";
+import {
+	canMemberRegisterToTournament,
+	isMemberRegisteredToTournament,
+} from "../utils/tournament.utils.js";
 
 dayjs.extend(isSameOrBefore);
 
@@ -78,9 +76,7 @@ const tournamentService = {
 		return players;
 	},
 
-	getAll: async (filter, pagination) => {
-		// TODO: add a check for the requester (to get a boolean "canRegister" and "isRegistered" for each tournament)
-
+	getAll: async (filter, pagination, requester = null) => {
 		const where = {};
 
 		if (filter) {
@@ -157,16 +153,48 @@ const tournamentService = {
 		});
 
 		// count the number of players for each tournament and add it to the tournament object
-		const promises = tournaments.map(async tournament => {
+		const nbrOfPlayersPromises = tournaments.map(async tournament => {
 			tournament.nbrOfPlayers = await tournament.countPlayers();
 			return tournament;
 		});
-		tournaments = await Promise.all(promises);
+		tournaments = await Promise.all(nbrOfPlayersPromises);
+
+		if (requester) {
+			// check if the user is registered to each tournament
+			const isUserRegisteredPromises = tournaments.map(
+				async tournament => {
+					tournament.isRegistered =
+						await isMemberRegisteredToTournament(
+							tournament.id,
+							requester.id,
+						);
+					return tournament;
+				},
+			);
+			tournaments = await Promise.all(isUserRegisteredPromises);
+
+			// check if the user can register to each tournament
+			const canUserRegisterPromises = tournaments.map(
+				async tournament => {
+					try {
+						await canMemberRegisterToTournament(
+							tournament.id,
+							requester.id,
+						);
+						tournament.canRegister = true;
+					} catch (error) {
+						tournament.canRegister = false;
+					}
+					return tournament;
+				},
+			);
+			tournaments = await Promise.all(canUserRegisterPromises);
+		}
 
 		return { tournaments, count };
 	},
 
-	getById: async tournamentId => {
+	getById: async (tournamentId, requester = null) => {
 		const tournament = await db.Tournament.findByPk(tournamentId, {
 			include: [
 				{
@@ -198,67 +226,35 @@ const tournamentService = {
 			throw new TournamentNotFoundError();
 		}
 
+		if (requester) {
+			// check if the user is registered to the tournament
+			tournament.isRegistered = await isMemberRegisteredToTournament(
+				tournament.id,
+				requester.id,
+			);
+
+			// check if the requester can register
+			try {
+				await canMemberRegisterToTournament(
+					tournament.id,
+					requester.id,
+				);
+				tournament.canRegister = true;
+			} catch (error) {
+				tournament.canRegister = false;
+			}
+		}
+
 		// order matches by round
 		tournament.matches.sort((a, b) => a.round - b.round);
 		return tournament;
 	},
 
 	participate: async (tournamentId, playerId) => {
-		const tournament = await db.Tournament.findByPk(tournamentId);
-		if (!tournament) {
-			throw new TournamentNotFoundError();
-		}
-
-		const player = await db.Member.findByPk(playerId);
-		if (!player) {
-			throw new MemberNotFoundError();
-		}
-
-		// check if the player is already registered in the tournament
-		const isAlreadyRegistered = await tournament.hasPlayers(player);
-		if (isAlreadyRegistered) {
-			throw new PlayerAlreadyRegisteredError();
-		}
-
-		// check if the tournament is still open for registration
-		if (dayjs().isAfter(dayjs(tournament.endRegistrationDate))) {
-			throw new RegistrationClosedError();
-		}
-
-		// check if the tournament is women only and if the player is a woman
-		if (tournament.womenOnly && player.gender !== "F") {
-			throw new TournamentIsWomenOnlyError();
-		}
-
-		// check if the player have enough ELO to participate
-		if (player.elo < tournament.minElo || player.elo > tournament.maxElo) {
-			throw new PlayerIsOutOfEloRangeError();
-		}
-
-		// check if the player is in the tournament's category
-		const tournamentCategories = await tournament.getCategories();
-		// if the tournament has categories, check if the player belongs to at least one of them
-		if (tournamentCategories.length) {
-			// get the minimum and maximum age of the tournament's categories
-			const minAge = Math.min(
-				...tournamentCategories.map(category => category.minAge),
-			);
-			const maxAge = Math.max(
-				...tournamentCategories.map(category => category.maxAge),
-			);
-
-			// compute the player's age
-			const playerAge = dayjs().diff(dayjs(player.birthDate), "year");
-			if (playerAge < minAge || playerAge > maxAge) {
-				throw new PlayerIsOutOfTheCategoriesError();
-			}
-		}
-
-		// check the number of players already registered in the tournament
-		const nbrOfPlayers = await tournament.countPlayers();
-		if (nbrOfPlayers >= tournament.maxPlayers) {
-			throw new TournamentIsFullError();
-		}
+		const { tournament, player } = await canMemberRegisterToTournament(
+			tournamentId,
+			playerId,
+		);
 
 		await tournament.addPlayers(player);
 	},

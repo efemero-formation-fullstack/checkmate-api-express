@@ -51,6 +51,7 @@ const tournamentController = {
 		const { tournaments, count } = await tournamentService.getAll(
 			filter,
 			pagination,
+			req.user,
 		);
 		const tournamentDtos = tournaments.map(
 			tournament => new TournamentListingDto(tournament),
@@ -64,7 +65,10 @@ const tournamentController = {
 
 	getById: async (req, res) => {
 		const tournamentId = +req.params.id;
-		const tournament = await tournamentService.getById(tournamentId);
+		const tournament = await tournamentService.getById(
+			tournamentId,
+			req.user,
+		);
 
 		if (!tournament) {
 			return res.status(404).json({ message: "Tournament not found" });

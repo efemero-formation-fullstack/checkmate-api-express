@@ -12,7 +12,7 @@ const Match = sequelize.define("Match", {
 		allowNull: false,
 	},
 	result: {
-		type: DataTypes.ENUM("white_win", "black_win", "draw"),
+		type: DataTypes.ENUM("white_win", "black_win", "draw", "bye"),
 		allowNull: true,
 	},
 });

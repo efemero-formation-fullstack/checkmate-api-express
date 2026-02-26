@@ -106,6 +106,16 @@ const tournamentController = {
 
 		res.status(204).send();
 	},
+
+	start: async (req, res) => {
+		const tournamentId = +req.params.id;
+
+		await tournamentService.start(tournamentId);
+
+		// TODO send email to the members registered to the tournament to inform them that the tournament has started
+
+		res.status(204).send();
+	},
 };
 
 export default tournamentController;

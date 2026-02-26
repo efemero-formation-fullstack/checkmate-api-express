@@ -68,4 +68,11 @@ tournamentRouter.post(
 	tournamentController.unparticipate,
 );
 
+// start tournament
+tournamentRouter.post(
+	"/:id/start",
+	connected(["admin"]),
+	tournamentController.start,
+);
+
 export default tournamentRouter;

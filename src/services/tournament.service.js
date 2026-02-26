@@ -18,6 +18,7 @@ import {
 import { CategoryNotFoundError } from "../custom-errors/category.error.js";
 import { MemberNotFoundError } from "../custom-errors/member.error.js";
 import { Op } from "sequelize";
+import { shuffle } from "../utils/array.utils.js";
 
 dayjs.extend(isSameOrBefore);
 
@@ -189,6 +190,7 @@ const tournamentService = {
 							as: "blackPlayer",
 						},
 					],
+					order: [["round", "ASC"]],
 				},
 			],
 		});
@@ -281,6 +283,80 @@ const tournamentService = {
 		}
 
 		await tournament.removePlayers(player);
+	},
+
+	start: async tournamentId => {
+		const tournament = await db.Tournament.findByPk(tournamentId);
+		if (!tournament) {
+			throw new TournamentNotFoundError();
+		}
+
+		// check if the tournament is already started
+		if (tournament.status !== "waiting") {
+			throw new TournamentAlreadyStartedError();
+		}
+
+		// check if the tournament has enough players to start
+		const players = await tournament.getPlayers();
+		if (players.length < tournament.minPlayers) {
+			throw new InvalidNumberOfPlayerError();
+		}
+
+		tournament.status = "started";
+		tournament.currentRound = 1;
+
+		// generate Round Robin matches
+
+		// shuffle players
+		shuffle(players);
+
+		// if the number of players is odd, add a dummy player for the bye
+		if (players.length % 2 === 1) {
+			players.push(null);
+		}
+
+		const n = players.length;
+		const totalRoundsPerLeg = n - 1;
+		let playerList = [...players]; // create a copy of the players array to manipulate
+		const matches = [];
+
+		// generate HOME matches
+		for (let round = 0; round < totalRoundsPerLeg; round++) {
+			for (let i = 0; i < n / 2; i++) {
+				const whitePlayer = playerList[i];
+				const blackPlayer = playerList[n - 1 - i];
+
+				if (whitePlayer && blackPlayer) {
+					matches.push({
+						tournamentId: tournament.id,
+						round: round + 1,
+						whitePlayerId: whitePlayer.id,
+						blackPlayerId: blackPlayer.id,
+					});
+				} else {
+					matches.push({
+						tournamentId: tournament.id,
+						round: round + 1,
+						whitePlayerId: whitePlayer.id,
+						blackPlayerId: null,
+						result: "bye",
+					});
+				}
+			}
+			// rotate players for the next round
+			playerList.splice(1, 0, playerList.pop());
+		}
+
+		// generate the return matches and inserve the 2 players
+		const returnMatches = matches.map(match => ({
+			tournamentId: match.tournamentId,
+			round: match.round + totalRoundsPerLeg,
+			whitePlayerId: match.blackPlayerId,
+			blackPlayerId: match.whitePlayerId,
+		}));
+
+		await db.Match.bulkCreate([...matches, ...returnMatches]);
+		await tournament.save();
 	},
 };
 

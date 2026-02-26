@@ -8,7 +8,7 @@ const memberRouter = Router();
 
 memberRouter.post(
 	"/",
-	connected(["admin"]),
+	// connected(["admin"]),
 	bodyValidator(registerValidator),
 	memberController.register,
 );

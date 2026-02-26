@@ -48,6 +48,7 @@ export class TournamentDetailsDto {
 	endRegistrationDate;
 	currentRound;
 	players;
+	matches;
 	currentMatches;
 
 	constructor(tournament) {
@@ -66,8 +67,11 @@ export class TournamentDetailsDto {
 		this.players = tournament.players.map(
 			player => new MemberListingDto(player),
 		);
-		this.currentMatches = tournament.matches.map(
+		this.matches = tournament.matches.map(
 			match => new MatchListingDto(match),
 		);
+		this.currentMatches = tournament.matches
+			.filter(match => match.round === tournament.currentRound)
+			.map(match => new MatchListingDto(match));
 	}
 }

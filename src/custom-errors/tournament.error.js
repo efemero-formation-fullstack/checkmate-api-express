@@ -105,3 +105,11 @@ export class TournamentIsNotRunningError extends Error {
 		super("Tournament is not currently running.");
 	}
 }
+
+export class NotAllMatchesHaveAResultError extends Error {
+	statusCode = 400;
+
+	constructor() {
+		super("Not all matches have a result.");
+	}
+}

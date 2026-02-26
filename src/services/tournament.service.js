@@ -5,6 +5,7 @@ import {
 	InvalidEloError,
 	InvalidEndRegistrationDateError,
 	InvalidNumberOfPlayerError,
+	NotAllMatchesHaveAResultError,
 	PlayerAlreadyRegisteredError,
 	PlayerIsOutOfEloRangeError,
 	PlayerIsOutOfTheCategoriesError,
@@ -358,6 +359,30 @@ const tournamentService = {
 		}));
 
 		await db.Match.bulkCreate([...matches, ...returnMatches]);
+		await tournament.save();
+	},
+
+	nextRound: async tournamentId => {
+		const tournament = await db.Tournament.findByPk(tournamentId);
+		if (!tournament) {
+			throw new TournamentNotFoundError();
+		}
+
+		// check if the tournament is running (so if the status is something else than started)
+		if (tournament.status !== "started") {
+			throw new TournamentAlreadyStartedError();
+		}
+
+		const matches = await tournament.getMatches({
+			where: { round: tournament.currentRound },
+		});
+
+		// check if all round has a result
+		if (matches.some(match => match.result === null)) {
+			throw new NotAllMatchesHaveAResultError();
+		}
+
+		tournament.currentRound++;
 		await tournament.save();
 	},
 };

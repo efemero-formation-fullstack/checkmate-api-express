@@ -75,4 +75,11 @@ tournamentRouter.post(
 	tournamentController.start,
 );
 
+// next round
+tournamentRouter.patch(
+	"/:id/next-round",
+	connected(["admin"]),
+	tournamentController.nextRound,
+);
+
 export default tournamentRouter;

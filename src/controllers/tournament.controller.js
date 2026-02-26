@@ -116,6 +116,16 @@ const tournamentController = {
 
 		res.status(204).send();
 	},
+
+	nextRound: async (req, res) => {
+		const tournamentId = +req.params.id;
+
+		await tournamentService.nextRound(tournamentId);
+
+		// TODO send email to the members registered to the tournament to inform them that the next round has started
+
+		res.status(204).send();
+	},
 };
 
 export default tournamentController;

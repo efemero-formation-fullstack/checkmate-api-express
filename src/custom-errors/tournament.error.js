@@ -97,3 +97,11 @@ export class PlayerNotRegisteredToTournamentError extends Error {
 		super("Player is not registered for this tournament.");
 	}
 }
+
+export class TournamentIsNotRunningError extends Error {
+	statusCode = 400;
+
+	constructor() {
+		super("Tournament is not currently running.");
+	}
+}

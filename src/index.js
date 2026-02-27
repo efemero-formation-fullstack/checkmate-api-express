@@ -7,6 +7,10 @@ import express from "express";
 // Importation de Morgan, un middleware de "logging" pour voir les requêtes HTTP dans la console
 import morgan from "morgan";
 
+// Importation de Swagger pour la documentation de l'API
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
+
 // Importation du gestionnaire d'erreurs personnalisé (centralise la gestion des erreurs)
 import { errorHandler } from "./middlewares/error.middleware.js";
 
@@ -16,6 +20,7 @@ import db from "./database/index.js";
 import router from "./routers/index.js";
 // Importation d'un middleware de sécurité pour vérifier l'identité de l'utilisateur (JWT, session, etc.)
 import { authentification } from "./middlewares/auth.middleware.js";
+import { swaggerOptions } from "./config/swagger.config.js";
 
 // Extraction du port défini dans le fichier .env (ex: 3000)
 const { APP_PORT } = process.env;
@@ -29,6 +34,11 @@ await db.sequelize.sync({ alter: true });
 
 // Initialisation de l'application Express
 const app = express();
+
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+
+// Route pour la documentation
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Sert les fichiers statiques (images, CSS, JS client) contenus dans le dossier "public"
 app.use(express.static("public"));

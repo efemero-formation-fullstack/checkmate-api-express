@@ -63,4 +63,5 @@ app.use(errorHandler);
 // Lance le serveur sur le port spécifié et affiche un message de confirmation
 app.listen(APP_PORT, () => {
 	console.log(`Web API available at http://localhost:${APP_PORT}`);
+	console.log(`Documentation available at http://localhost:${APP_PORT}/docs`);
 });

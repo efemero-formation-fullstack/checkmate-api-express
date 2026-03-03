@@ -60,6 +60,8 @@ const tournamentService = {
 		// associate the tournament with the categories
 		await newTournament.addCategories(categories);
 
+		newTournament.categories = categories;
+
 		return newTournament;
 	},
 

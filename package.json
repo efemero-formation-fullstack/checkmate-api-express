@@ -6,7 +6,9 @@
 	"scripts": {
 		"dev": "npx nodemon .\\src\\index.js",
 		"format": "prettier --write .",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "vitest",
+		"test:run": "vitest run",
+		"coverage": "vitest run --coverage"
 	},
 	"keywords": [],
 	"author": "",
@@ -29,7 +31,11 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
+		"@vitest/coverage-v8": "^4.0.18",
 		"nodemon": "^3.1.14",
-		"prettier": "^3.8.1"
+		"prettier": "^3.8.1",
+		"superagent": "^10.3.0",
+		"supertest": "^7.2.2",
+		"vitest": "^4.0.18"
 	}
 }

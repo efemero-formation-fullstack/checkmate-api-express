@@ -1,5 +1,6 @@
 import { sendTemplatedEmail } from "../services/mail.service.js";
 import memberService from "../services/member.service.js";
+import { MemberDto } from "../dtos/member.dto.js";
 
 const memberController = {
 	register: async (req, res) => {
@@ -26,6 +27,14 @@ const memberController = {
 			message: "Member created successfully",
 			emailSent,
 		});
+	},
+	getConsumer: async (req, res) => {
+		const consumer = await memberService.getById(req.user.id);
+		res.status(200).send(new MemberDto(consumer));
+	},
+	getById: async (req, res) => {
+		const member = await memberService.getById(req.params.id);
+		res.status(200).send(new MemberDto(member));
 	},
 };
 

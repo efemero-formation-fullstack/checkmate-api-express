@@ -6,6 +6,7 @@ import {
 	EmailAlreadyExistsError,
 	UsernameAlreadyExistsError,
 	InvalidCredentialError,
+	MemberNotFoundError,
 } from "../../src/custom-errors/member.error.js";
 
 // On mocke les dépendances externes
@@ -104,6 +105,31 @@ describe("Member Service", () => {
 			await expect(
 				memberService.login("user", null, "wrong_pass"),
 			).rejects.toThrow(InvalidCredentialError);
+		});
+	});
+
+	describe("getById", () => {
+		it("devrait retourner le membre si l'id est valide", async () => {
+			const mockMember = {
+				id: 1,
+				username: "user1",
+				password: "hashed_password",
+			};
+
+			db.Member.findOne.mockResolvedValue(mockMember);
+
+			const result = await memberService.getById(1);
+
+			expect(db.Member.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+			expect(result).toEqual(mockMember);
+		});
+
+		it("devrait lever une erreur si l'id est invalide", async () => {
+			db.Member.findOne.mockResolvedValue(null);
+
+			await expect(memberService.getById("invalid-id")).rejects.toThrow(
+				MemberNotFoundError,
+			);
 		});
 	});
 });

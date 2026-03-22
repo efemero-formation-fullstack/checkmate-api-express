@@ -3,6 +3,7 @@ import db from "../database/index.js";
 import {
 	EmailAlreadyExistsError,
 	InvalidCredentialError,
+	MemberNotFoundError,
 	UsernameAlreadyExistsError,
 } from "../custom-errors/member.error.js";
 
@@ -55,6 +56,13 @@ const memberService = {
 			throw new InvalidCredentialError();
 		}
 
+		return member;
+	},
+	getById: async id => {
+		const member = await db.Member.findOne({ where: { id } });
+		if (!member) {
+			throw new MemberNotFoundError();
+		}
 		return member;
 	},
 };

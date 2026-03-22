@@ -84,4 +84,115 @@ memberRouter.post(
 	memberController.register,
 );
 
+/**
+ * @openapi
+ * /member/me:
+ *   get:
+ *     tags:
+ *       - Member
+ *     summary: Récupérer le membre connecté
+ *     description: Permet à un membre connecté de récupérer ses propres informations.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Succès - Le membre a été récupéré avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 1
+ *                 username:
+ *                   type: string
+ *                   example: "JohnDoe"
+ *                 email:
+ *                   type: string
+ *                   example: "[EMAIL_ADDRESS]"
+ *                 birthDate:
+ *                   type: string
+ *                   format: date
+ *                   example: "2000-01-01"
+ *                 gender:
+ *                   type: string
+ *                   example: "M"
+ *                 elo:
+ *                   type: integer
+ *                   example: 1500
+ *                 role:
+ *                   type: string
+ *                   example: "member"
+ *       401:
+ *         description: Non autorisé - L'utilisateur n'est pas connecté ou le token est invalide.
+ *       500:
+ *         description: Erreur serveur interne.
+ */
+memberRouter.get("/me", connected(), memberController.getConsumer);
+
+/**
+ * @openapi
+ * /member/{id}:
+ *   get:
+ *     tags:
+ *       - Member
+ *     summary: Récupérer un membre par son ID
+ *     description: Permet à un membre connecté de récupérer les informations d'un membre par son ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: L'ID du membre à récupérer.
+ *     responses:
+ *       200:
+ *         description: Succès - Le membre a été récupéré avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 1
+ *                 username:
+ *                   type: string
+ *                   example: "JohnDoe"
+ *                 email:
+ *                   type: string
+ *                   example: "[EMAIL_ADDRESS]"
+ *                 birthDate:
+ *                   type: string
+ *                   format: date
+ *                   example: "2000-01-01"
+ *                 gender:
+ *                   type: string
+ *                   example: "M"
+ *                 elo:
+ *                   type: integer
+ *                   example: 1500
+ *                 role:
+ *                   type: string
+ *                   example: "member"
+ *       401:
+ *         description: Non autorisé - L'utilisateur n'est pas connecté ou le token est invalide.
+ *       404:
+ *         description: Non trouvé - Le membre avec l'ID spécifié n'a pas été trouvé.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Member not found"
+ *       500:
+ *         description: Erreur serveur interne.
+ */
+memberRouter.get("/:id", connected(), memberController.getById);
+
 export default memberRouter;

@@ -132,4 +132,98 @@ describe("Member Service", () => {
 			);
 		});
 	});
+
+	describe("update", () => {
+		it("devrait mettre à jour et retourner le membre", async () => {
+			const mockMember = {
+				id: 1,
+				username: "oldname",
+				email: "old@test.com",
+				update: vi.fn().mockResolvedValue({
+					id: 1,
+					username: "newname",
+					email: "new@test.com",
+				}),
+			};
+
+			db.Member.findOne.mockResolvedValueOnce(mockMember); // find user by id
+			db.Member.findOne.mockResolvedValueOnce(null); // check email uniqueness
+			db.Member.findOne.mockResolvedValueOnce(null); // check username uniqueness
+
+			const result = await memberService.update(1, {
+				username: "newname",
+				email: "new@test.com",
+			});
+
+			expect(db.Member.findOne).toHaveBeenCalledTimes(3);
+			expect(mockMember.update).toHaveBeenCalledWith({
+				username: "newname",
+				email: "new@test.com",
+			});
+			expect(result.username).toBe("newname");
+		});
+
+		it("devrait lever une erreur si le membre n'existe pas", async () => {
+			db.Member.findOne.mockResolvedValueOnce(null);
+			await expect(memberService.update(999, {})).rejects.toThrow(
+				MemberNotFoundError,
+			);
+		});
+
+		it("devrait lever une erreur si le nouvel email est déjà pris", async () => {
+			db.Member.findOne.mockResolvedValueOnce({
+				id: 1,
+				email: "old@test.com",
+			}); // the user
+			db.Member.findOne.mockResolvedValueOnce({
+				id: 2,
+				email: "taken@test.com",
+			}); // email taken
+			
+			await expect(
+				memberService.update(1, { email: "taken@test.com" }),
+			).rejects.toThrow(EmailAlreadyExistsError);
+		});
+
+		it("devrait lever une erreur si le nouveau nom d'utilisateur est déjà pris", async () => {
+			db.Member.findOne.mockResolvedValueOnce({
+				id: 1,
+				username: "old",
+				email: "old@test.com",
+			}); // the user
+			// email not changed or not provided -> skip email check
+			db.Member.findOne.mockResolvedValueOnce({
+				id: 2,
+				username: "taken",
+			}); // username taken
+			
+			await expect(
+				memberService.update(1, { username: "taken" }),
+			).rejects.toThrow(UsernameAlreadyExistsError);
+		});
+	});
+
+	describe("getAll", () => {
+		it("devrait retourner la liste des membres avec le compte total", async () => {
+			const mockMembers = [{ id: 1, username: "user1" }, { id: 2, username: "user2" }];
+			db.Member.findAndCountAll = vi.fn().mockResolvedValue({
+				rows: mockMembers,
+				count: 2,
+			});
+
+			const filter = { username: "user" };
+			const pagination = { offset: 0, limit: 10, sortBy: "username", sortOrder: "DESC" };
+
+			const result = await memberService.getAll(filter, pagination);
+
+			expect(db.Member.findAndCountAll).toHaveBeenCalledWith({
+				where: filter,
+				offset: 0,
+				limit: 10,
+				order: [["username", "DESC"]],
+			});
+			expect(result.members).toEqual(mockMembers);
+			expect(result.count).toBe(2);
+		});
+	});
 });

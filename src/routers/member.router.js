@@ -1,6 +1,13 @@
 import { Router } from "express";
-import { bodyValidator } from "../middlewares/validator.middleware.js";
-import { registerValidator } from "../validators/member.validator.js";
+import {
+	bodyValidator,
+	paramValidator,
+} from "../middlewares/validator.middleware.js";
+import {
+	getByIdValidator,
+	registerValidator,
+	updateValidator,
+} from "../validators/member.validator.js";
 import memberController from "../controllers/member.controller.js";
 import { connected } from "../middlewares/auth.middleware.js";
 
@@ -83,7 +90,7 @@ memberRouter.get("/me", connected(), memberController.getConsumer);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: L'ID du membre à récupérer.
  *     responses:
@@ -104,6 +111,95 @@ memberRouter.get("/me", connected(), memberController.getConsumer);
  *       500:
  *         description: Erreur serveur interne.
  */
-memberRouter.get("/:id", connected(), memberController.getById);
+memberRouter.get(
+	"/:id",
+	connected(),
+	paramValidator(getByIdValidator),
+	memberController.getById,
+);
+
+/**
+ * @openapi
+ * /member/me:
+ *   put:
+ *     tags:
+ *       - Member
+ *     summary: Mettre à jour un membre connecté
+ *     description: Permet à un membre connecté de mettre à jour ses propres informations.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateMemberSchema'
+ *     responses:
+ *       200:
+ *         description: Succès - Le membre a été mis à jour avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MemberSchema'
+ *       401:
+ *         description: Non autorisé - L'utilisateur n'est pas connecté ou le token est invalide.
+ *       500:
+ *         description: Erreur serveur interne.
+ */
+memberRouter.put(
+	"/me",
+	connected(),
+	bodyValidator(updateValidator),
+	memberController.updateConsumer,
+);
+
+/**
+ * @openapi
+ * /member/{id}:
+ *   put:
+ *     tags:
+ *       - Member
+ *     summary: Mettre à jour un membre par son ID
+ *     description: Permet à un membre connecté de mettre à jour les informations d'un membre par son ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: L'ID du membre à mettre à jour.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateMemberSchema'
+ *     responses:
+ *       200:
+ *         description: Succès - Le membre a été mis à jour avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MemberSchema'
+ *       401:
+ *         description: Non autorisé - L'utilisateur n'est pas connecté ou le token est invalide.
+ *       404:
+ *         description: Non trouvé - Le membre avec l'ID spécifié n'a pas été trouvé.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponseSchema'
+ *       500:
+ *         description: Erreur serveur interne.
+ */
+memberRouter.put(
+	"/:id",
+	connected(),
+	paramValidator(getByIdValidator),
+	bodyValidator(updateValidator),
+	memberController.updateById,
+);
 
 export default memberRouter;

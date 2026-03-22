@@ -65,6 +65,36 @@ const memberService = {
 		}
 		return member;
 	},
+	update: async (id, data) => {
+		const member = await db.Member.findOne({ where: { id } });
+		if (!member) {
+			throw new MemberNotFoundError();
+		}
+
+		if (data.email && data.email !== member.email) {
+			// check if the email already exists
+			const existingUser = await db.Member.findOne({
+				where: { email: data.email },
+			});
+			if (existingUser) {
+				throw new EmailAlreadyExistsError();
+			}
+		}
+
+		if (data.username && data.username !== member.username) {
+			// check if username already exists
+			const existingUsername = await db.Member.findOne({
+				where: { username: data.username },
+			});
+			if (existingUsername) {
+				throw new UsernameAlreadyExistsError();
+			}
+		}
+
+		// update the user
+		const updatedMember = await member.update(data);
+		return updatedMember;
+	},
 };
 
 export default memberService;

@@ -8,3 +8,15 @@ export const registerValidator = z.object({
 	gender: z.enum(["M", "F", "O"]),
 	elo: z.number().int().min(0).max(3000).optional(),
 });
+
+export const updateValidator = z.object({
+	username: z.string().min(3).max(20).optional(),
+	email: z.email().optional(),
+	birthdate: z.iso.date().optional(),
+	gender: z.enum(["M", "F", "O"]).optional(),
+	elo: z.number().int().min(0).max(3000).optional(),
+});
+
+export const getByIdValidator = z.object({
+	id: z.uuid(),
+});

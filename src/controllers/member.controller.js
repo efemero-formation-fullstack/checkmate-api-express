@@ -36,6 +36,17 @@ const memberController = {
 		const member = await memberService.getById(req.params.id);
 		res.status(200).send(new MemberDto(member));
 	},
+	updateConsumer: async (req, res) => {
+		const updatedMember = await memberService.update(req.user.id, req.data);
+		res.status(200).send(new MemberDto(updatedMember));
+	},
+	updateById: async (req, res) => {
+		const updatedMember = await memberService.update(
+			req.params.id,
+			req.data,
+		);
+		res.status(200).send(new MemberDto(updatedMember));
+	},
 };
 
 export default memberController;

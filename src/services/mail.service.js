@@ -8,16 +8,18 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 1. Create the Nodemailer transporter using your .env variables
-const transporter = nodemailer.createTransport({
-	host: process.env.SMTP_HOST,
-	port: process.env.SMTP_PORT,
-	secure: process.env.SMTP_PORT === "465", // true for 465, false for 587 or other ports
-	auth: {
-		user: process.env.SMTP_USER,
-		pass: process.env.SMTP_PASS,
-	},
-});
+// 1. Create the Nodemailer transporter using your .env variables (if not defined, it will return null and the email will not be sent)
+const transporter = process.env.SMTP_HOST
+	? nodemailer.createTransport({
+			host: process.env.SMTP_HOST,
+			port: process.env.SMTP_PORT,
+			secure: process.env.SMTP_PORT === "465", // true for 465, false for 587 or other ports
+			auth: {
+				user: process.env.SMTP_USER,
+				pass: process.env.SMTP_PASS,
+			},
+		})
+	: null;
 
 /**
  * Send an email using a Handlebars template
@@ -32,6 +34,10 @@ export const sendTemplatedEmail = async (
 	templateName,
 	context = {},
 ) => {
+	if (!transporter) {
+		console.warn("Mail service not configured. Skipping email.");
+		return;
+	}
 	try {
 		// 2. Build the absolute path to your Handlebars template
 		const templatePath = path.join(

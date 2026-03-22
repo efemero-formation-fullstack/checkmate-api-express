@@ -4,11 +4,14 @@
 	"description": "",
 	"main": "src/index.js",
 	"scripts": {
-		"dev": "npx nodemon .\\src\\index.js",
+		"start": "node src/index.js",
+		"dev": "npx nodemon src/index.js",
 		"format": "prettier --write .",
 		"test": "vitest",
 		"test:run": "vitest run",
-		"coverage": "vitest run --coverage"
+		"coverage": "vitest run --coverage",
+		"dev:docker": "docker compose -f docker/docker-compose.yml -p checkmate up -d --build",
+		"dev:docker:seed": "docker compose -f docker/docker-compose.yml -p checkmate exec api node scripts/dev-seed-db.js"
 	},
 	"keywords": [],
 	"author": "",

@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: npm run dev
+    volumes:
+      - ..:/app
+      - /app/node_modules
+    ports:
+      - "8080:8080"
+    networks:
+      - checkmate_default
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:18.3-alpine
+    environment:
+      POSTGRES_USER: ${PG_USER:-devuser}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-devpassword}
+      POSTGRES_DB: ${PG_DATABASE:-checkmate}
+    ports:
+      - "5432:5432"
+    volumes:
+      - checkmate_pgdata:/var/lib/postgresql/data
+    networks:
+      - checkmate_default
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${PG_DATABASE:-postgres} -U $${PG_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  checkmate_default:
+    driver: bridge
+
+volumes:
+  checkmate_pgdata:

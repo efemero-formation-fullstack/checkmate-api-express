@@ -1,5 +1,4 @@
 import "dotenv/config";
-import bcrypt from "bcrypt";
 import db from "../src/database/index.js";
 import memberService from "../src/services/member.service.js";
 import tournamentService from "../src/services/tournament.service.js";
@@ -15,17 +14,17 @@ const seedDatabase = async () => {
 		console.log("Database synced.");
 
 		console.log("Seeding categories...");
-		const categorySenior = await db.Category.create({
+		await db.Category.create({
 			name: "Senior",
 			ageMin: 60,
 			ageMax: 999,
 		});
-		const categoryAdult = await db.Category.create({
+		await db.Category.create({
 			name: "Adult",
 			ageMin: 18,
 			ageMax: 60,
 		});
-		const categoryJunior = await db.Category.create({
+		await db.Category.create({
 			name: "Junior",
 			ageMin: 0,
 			ageMax: 18,
@@ -47,8 +46,8 @@ const seedDatabase = async () => {
 		await memberAdmin.save();
 
 		const memberJohn = await memberService.create({
-			username: "john_doe",
-			email: "john@user.local",
+			username: "joueur1",
+			email: "joueur1@user.local",
 			password: password,
 			birthdate: "1990-05-15",
 			gender: "M",
@@ -56,8 +55,8 @@ const seedDatabase = async () => {
 		});
 
 		const memberJane = await memberService.create({
-			username: "jane_smith",
-			email: "jane@checkmate.local",
+			username: "joueur2",
+			email: "joueur2@user.local",
 			password: password,
 			birthdate: "1995-10-20",
 			gender: "F",
@@ -65,8 +64,8 @@ const seedDatabase = async () => {
 		});
 
 		const memberJunior = await memberService.create({
-			username: "timmy",
-			email: "timmy@checkmate.local",
+			username: "joueur3",
+			email: "joueur3@user.local",
 			password: password,
 			birthdate: "2010-03-10",
 			gender: "M",
@@ -74,8 +73,26 @@ const seedDatabase = async () => {
 		});
 
 		const memberJunior2 = await memberService.create({
-			username: "Maxime",
-			email: "maxime@checkmate.local",
+			username: "joueur4",
+			email: "joueur4@user.local",
+			password: password,
+			birthdate: "2010-03-10",
+			gender: "M",
+			elo: 1100,
+		});
+
+		const memberJunior3 = await memberService.create({
+			username: "joueur5",
+			email: "joueur5@user.local",
+			password: password,
+			birthdate: "2010-03-10",
+			gender: "M",
+			elo: 1100,
+		});
+
+		const memberJunior4 = await memberService.create({
+			username: "joueur6",
+			email: "joueur6@user.local",
 			password: password,
 			birthdate: "2010-03-10",
 			gender: "M",
@@ -84,7 +101,7 @@ const seedDatabase = async () => {
 
 		console.log("Seeding tournaments...");
 		const tournament1 = await tournamentService.create({
-			name: "tournament2",
+			name: "tournament1",
 			minPlayers: 2,
 			maxPlayers: 32,
 			endRegistrationDate: "2026-03-30",
@@ -97,6 +114,8 @@ const seedDatabase = async () => {
 		await tournament1.addPlayer(memberJane);
 		await tournament1.addPlayer(memberJunior);
 		await tournament1.addPlayer(memberJunior2);
+		await tournament1.addPlayer(memberJunior3);
+		await tournament1.addPlayer(memberJunior4);
 
 		console.log("Database seeded successfully!");
 	} catch (error) {

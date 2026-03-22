@@ -28,12 +28,7 @@ const matchRouter = Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               result:
- *                 type: string
- *                 enum: [white_win, black_win, draw]
- *                 description: Le résultat du match. Peut être 'white_win', 'black_win' ou 'draw'. Optionnel (valeur par défaut null).
+ *             $ref: '#/components/schemas/SetResultSchema'
  *     responses:
  *       204:
  *         description: Succès - Le résultat du match a été mis à jour avec succès. Aucune donnée n'est renvoyée.
@@ -42,11 +37,7 @@ const matchRouter = Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Tournament is not currently running."
+ *               $ref: '#/components/schemas/ErrorResponseSchema'
  *       401:
  *         description: Non autorisé - L'utilisateur n'est pas connecté ou le token est invalide.
  *       403:
@@ -56,11 +47,7 @@ const matchRouter = Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Match not found"
+ *               $ref: '#/components/schemas/ErrorResponseSchema'
  *       500:
  *         description: Erreur serveur interne.
  */

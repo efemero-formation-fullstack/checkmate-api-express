@@ -25,5 +25,5 @@ export const swaggerOptions = {
 		},
 	},
 	// Vérifie bien ce chemin selon ton arborescence
-	apis: ["./src/routers/*.js"],
+	apis: ["./src/routers/*.js", "./src/docs/*.js"],
 };

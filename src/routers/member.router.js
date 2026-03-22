@@ -21,42 +21,7 @@ const memberRouter = Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - username
- *               - email
- *               - password
- *               - birthdate
- *               - gender
- *             properties:
- *               username:
- *                 type: string
- *                 minLength: 3
- *                 maxLength: 20
- *                 description: Le nom d'utilisateur du membre.
- *               email:
- *                 type: string
- *                 format: email
- *                 description: L'adresse email du membre.
- *               password:
- *                 type: string
- *                 format: password
- *                 minLength: 6
- *                 maxLength: 100
- *                 description: Le mot de passe du membre.
- *               birthdate:
- *                 type: string
- *                 format: date
- *                 description: La date de naissance du membre (au format ISO, ex 2000-01-01).
- *               gender:
- *                 type: string
- *                 enum: [M, F, O]
- *                 description: Le genre du membre (M pour Masculin, F pour Féminin, O pour Autre).
- *               elo:
- *                 type: integer
- *                 minimum: 0
- *                 maximum: 3000
- *                 description: Le score ELO du membre. Optionnel.
+ *             $ref: '#/components/schemas/RegisterMemberSchema'
  *     responses:
  *       204:
  *         description: Succès - Le membre a été créé avec succès. Aucune donnée n'est renvoyée.
@@ -65,11 +30,7 @@ const memberRouter = Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Email already exists"
+ *               $ref: '#/components/schemas/ErrorResponseSchema'
  *       401:
  *         description: Non autorisé - L'utilisateur n'est pas connecté ou le token est invalide.
  *       403:
@@ -100,30 +61,7 @@ memberRouter.post(
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                   example: 1
- *                 username:
- *                   type: string
- *                   example: "JohnDoe"
- *                 email:
- *                   type: string
- *                   example: "[EMAIL_ADDRESS]"
- *                 birthDate:
- *                   type: string
- *                   format: date
- *                   example: "2000-01-01"
- *                 gender:
- *                   type: string
- *                   example: "M"
- *                 elo:
- *                   type: integer
- *                   example: 1500
- *                 role:
- *                   type: string
- *                   example: "member"
+ *               $ref: '#/components/schemas/MemberSchema'
  *       401:
  *         description: Non autorisé - L'utilisateur n'est pas connecté ou le token est invalide.
  *       500:
@@ -154,30 +92,7 @@ memberRouter.get("/me", connected(), memberController.getConsumer);
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                   example: 1
- *                 username:
- *                   type: string
- *                   example: "JohnDoe"
- *                 email:
- *                   type: string
- *                   example: "[EMAIL_ADDRESS]"
- *                 birthDate:
- *                   type: string
- *                   format: date
- *                   example: "2000-01-01"
- *                 gender:
- *                   type: string
- *                   example: "M"
- *                 elo:
- *                   type: integer
- *                   example: 1500
- *                 role:
- *                   type: string
- *                   example: "member"
+ *               $ref: '#/components/schemas/MemberSchema'
  *       401:
  *         description: Non autorisé - L'utilisateur n'est pas connecté ou le token est invalide.
  *       404:
@@ -185,11 +100,7 @@ memberRouter.get("/me", connected(), memberController.getConsumer);
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Member not found"
+ *               $ref: '#/components/schemas/ErrorResponseSchema'
  *       500:
  *         description: Erreur serveur interne.
  */

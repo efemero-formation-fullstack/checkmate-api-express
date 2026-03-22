@@ -29,57 +29,17 @@ const tournamentRouter = Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - name
- *               - minPlayers
- *               - maxPlayers
- *               - endRegistrationDate
- *             properties:
- *               name:
- *                 type: string
- *                 minLength: 2
- *                 maxLength: 255
- *                 description: Le nom du tournoi.
- *               location:
- *                 type: string
- *                 maxLength: 255
- *                 description: Le lieu du tournoi. Optionnel.
- *               minPlayers:
- *                 type: integer
- *                 minimum: 2
- *                 maximum: 32
- *                 description: Le nombre minimum de joueurs.
- *               maxPlayers:
- *                 type: integer
- *                 minimum: 2
- *                 maximum: 32
- *                 description: Le nombre maximum de joueurs.
- *               minElo:
- *                 type: integer
- *                 minimum: 0
- *                 maximum: 3000
- *                 description: Le score ELO minimum requis. Optionnel.
- *               maxElo:
- *                 type: integer
- *                 minimum: 0
- *                 maximum: 3000
- *                 description: Le score ELO maximum autorisé. Optionnel.
- *               womenOnly:
- *                 type: boolean
- *                 description: Indique si le tournoi est réservé aux femmes. Optionnel.
- *               endRegistrationDate:
- *                 type: string
- *                 format: date-time
- *                 description: La date limite d'inscription. Doit être au minimum la date actuelle + le nombre de joueurs minimum en jours.
- *               categories:
- *                 type: array
- *                 items:
- *                   type: integer
- *                 description: Liste des IDs des catégories associées. Optionnel.
+ *             $ref: '#/components/schemas/CreateTournamentSchema'
  *     responses:
  *       201:
  *         description: Tournoi créé avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/TournamentSchema'
  *       400:
  *         description: Erreur de validation des données (ex nombre de joueurs invalide, ELO invalide, date invalide).
  *       401:
@@ -207,6 +167,18 @@ tournamentRouter.delete(
  *     responses:
  *       200:
  *         description: Liste des tournois récupérée.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   description: Le nombre total de tournois.
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/TournamentSchema'
  *       400:
  *         description: Erreur sur les paramètres de requête.
  */
@@ -235,6 +207,13 @@ tournamentRouter.get(
  *     responses:
  *       200:
  *         description: Détails du tournoi récupérés avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/TournamentSchema'
  *       404:
  *         description: Tournoi non trouvé.
  */
@@ -297,14 +276,7 @@ tournamentRouter.post(
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - memberId
- *             properties:
- *               memberId:
- *                 type: string
- *                 format: uuid
- *                 description: L'ID du membre à inscrire.
+ *             $ref: '#/components/schemas/RegisterTournamentSchema'
  *     responses:
  *       204:
  *         description: Inscription réussie.
@@ -381,14 +353,7 @@ tournamentRouter.post(
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - memberId
- *             properties:
- *               memberId:
- *                 type: string
- *                 format: uuid
- *                 description: L'ID du membre à désinscrire.
+ *             $ref: '#/components/schemas/RegisterTournamentSchema'
  *     responses:
  *       204:
  *         description: Désinscription réussie.
@@ -506,6 +471,13 @@ tournamentRouter.patch(
  *     responses:
  *       200:
  *         description: Score du joueur récupéré avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/PlayerScoreSchema'
  *       400:
  *         description: Le tournoi n'a pas encore commencé.
  *       404:
@@ -535,6 +507,15 @@ tournamentRouter.get(
  *     responses:
  *       200:
  *         description: Liste des scores récupérée avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/PlayerScoreSchema'
  *       400:
  *         description: Le tournoi n'a pas encore commencé.
  *       404:
@@ -561,6 +542,56 @@ tournamentRouter.get("/:id/scores", tournamentController.allPlayersScores);
  *     responses:
  *       200:
  *         description: Matchs de la ronde courante récupérés avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/RoundMatchesSchema'
+ *         example:
+ *           data:
+ *             round: 1
+ *             matches:
+ *               - id: "d8f09d33-2e4e-409a-9a4c-4431de5d5a54"
+ *                 whitePlayer:
+ *                   id: "ff553b65-33c8-4346-9a32-b48aa1d8e2b2"
+ *                   username: "joueur6"
+ *                   gender: "M"
+ *                   elo: 1100
+ *                 blackPlayer:
+ *                   id: "f484e2d3-e0c0-4fb2-9608-b19799428dea"
+ *                   username: "joueur2"
+ *                   gender: "F"
+ *                   elo: 1600
+ *                 result: null
+ *                 round: 1
+ *               - id: "703eec15-3510-44d4-b7f4-7c90d15e8163"
+ *                 whitePlayer:
+ *                   id: "47f42555-17c6-44f6-9e53-87a2c351e26a"
+ *                   username: "joueur1"
+ *                   gender: "M"
+ *                   elo: 1200
+ *                 blackPlayer:
+ *                   id: "30a5de51-ad99-404a-b778-283d826d0de5"
+ *                   username: "joueur3"
+ *                   gender: "M"
+ *                   elo: 1100
+ *                 result: null
+ *                 round: 1
+ *               - id: "0555ffb3-d0b6-4f00-bd0b-6b8d3a20420d"
+ *                 whitePlayer:
+ *                   id: "ebc7fe71-4e99-4431-8508-5e6427830e55"
+ *                   username: "joueur4"
+ *                   gender: "M"
+ *                   elo: 1100
+ *                 blackPlayer:
+ *                   id: "d59c771e-2396-4cc9-939a-0576b9307c7a"
+ *                   username: "joueur5"
+ *                   gender: "M"
+ *                   elo: 1100
+ *                 result: null
+ *                 round: 1
  *       400:
  *         description: Le tournoi n'a pas encore commencé.
  *       404:
@@ -571,5 +602,86 @@ tournamentRouter.get(
 	tournamentController.getCurrentRoundMatches,
 );
 
+// get round matches
+/**
+ * @openapi
+ * /tournament/{id}/round/{round}:
+ *   get:
+ *     tags:
+ *       - Tournament
+ *     summary: Récupérer les matchs d'une ronde spécifique
+ *     description: Renvoie la liste des matchs prévus pour une ronde spécifique d'un tournoi donné.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: L'ID du tournoi.
+ *       - in: path
+ *         name: round
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Le numéro de la ronde.
+ *     responses:
+ *       200:
+ *         description: Matchs de la ronde récupérés avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/RoundMatchesSchema'
+ *         example:
+ *           data:
+ *             round: 1
+ *             matches:
+ *               - id: "d8f09d33-2e4e-409a-9a4c-4431de5d5a54"
+ *                 whitePlayer:
+ *                   id: "ff553b65-33c8-4346-9a32-b48aa1d8e2b2"
+ *                   username: "joueur6"
+ *                   gender: "M"
+ *                   elo: 1100
+ *                 blackPlayer:
+ *                   id: "f484e2d3-e0c0-4fb2-9608-b19799428dea"
+ *                   username: "joueur2"
+ *                   gender: "F"
+ *                   elo: 1600
+ *                 result: null
+ *                 round: 1
+ *               - id: "703eec15-3510-44d4-b7f4-7c90d15e8163"
+ *                 whitePlayer:
+ *                   id: "47f42555-17c6-44f6-9e53-87a2c351e26a"
+ *                   username: "joueur1"
+ *                   gender: "M"
+ *                   elo: 1200
+ *                 blackPlayer:
+ *                   id: "30a5de51-ad99-404a-b778-283d826d0de5"
+ *                   username: "joueur3"
+ *                   gender: "M"
+ *                   elo: 1100
+ *                 result: null
+ *                 round: 1
+ *               - id: "0555ffb3-d0b6-4f00-bd0b-6b8d3a20420d"
+ *                 whitePlayer:
+ *                   id: "ebc7fe71-4e99-4431-8508-5e6427830e55"
+ *                   username: "joueur4"
+ *                   gender: "M"
+ *                   elo: 1100
+ *                 blackPlayer:
+ *                   id: "d59c771e-2396-4cc9-939a-0576b9307c7a"
+ *                   username: "joueur5"
+ *                   gender: "M"
+ *                   elo: 1100
+ *                 result: null
+ *                 round: 1
+ *       400:
+ *         description: Le tournoi n'a pas encore commencé ou la ronde demandée n'existe pas.
+ *       404:
+ *         description: Tournoi non trouvé.
+ */
 tournamentRouter.get("/:id/round/:round", tournamentController.getRoundMatches);
+
 export default tournamentRouter;

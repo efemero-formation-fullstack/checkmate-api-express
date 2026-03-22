@@ -52,8 +52,6 @@ export class TournamentDetailsDto {
 	endRegistrationDate;
 	currentRound;
 	players;
-	matches;
-	currentMatches;
 	isRegistered;
 	canRegister;
 
@@ -73,12 +71,6 @@ export class TournamentDetailsDto {
 		this.players = tournament.players.map(
 			player => new MemberListingDto(player),
 		);
-		this.matches = tournament.matches.map(
-			match => new MatchListingDto(match),
-		);
-		this.currentMatches = tournament.matches
-			.filter(match => match.round === tournament.currentRound)
-			.map(match => new MatchListingDto(match));
 		this.isRegistered = tournament.isRegistered;
 		this.canRegister = tournament.canRegister;
 	}
@@ -102,12 +94,12 @@ export class PlayerScoreDto {
 	}
 }
 
-export class CurrentRoundMatches {
-	currentRound;
+export class RoundMatchesDto {
+	round;
 	matches;
 
-	constructor(currentRound, matches) {
-		this.currentRound = currentRound;
+	constructor(round, matches) {
+		this.round = round;
 		this.matches = matches.map(match => new MatchListingDto(match));
 	}
 }

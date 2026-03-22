@@ -1,5 +1,5 @@
 import {
-	CurrentRoundMatches,
+	RoundMatchesDto,
 	PlayerScoreDto,
 	TournamentDetailsDto,
 	TournamentListingDto,
@@ -160,11 +160,25 @@ const tournamentController = {
 	getCurrentRoundMatches: async (req, res) => {
 		const tournamentId = +req.params.id;
 
-		const { currentRound, matches } =
-			await tournamentService.getCurrentRoundMatches(tournamentId);
+		const { round, matches } =
+			await tournamentService.getRoundMatches(tournamentId);
 
 		res.status(200).json({
-			data: new CurrentRoundMatches(currentRound, matches),
+			data: new RoundMatchesDto(round, matches),
+		});
+	},
+
+	getRoundMatches: async (req, res) => {
+		const tournamentId = +req.params.id;
+		const round = +req.params.round;
+
+		const matches = await tournamentService.getRoundMatches(
+			tournamentId,
+			round,
+		);
+
+		res.status(200).json({
+			data: new RoundMatchesDto(round, matches),
 		});
 	},
 };

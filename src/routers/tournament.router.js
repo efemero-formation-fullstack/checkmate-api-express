@@ -545,7 +545,7 @@ tournamentRouter.get("/:id/scores", tournamentController.allPlayersScores);
 // get current round matches
 /**
  * @openapi
- * /tournament/{id}/current-round-matches:
+ * /tournament/{id}/match/current:
  *   get:
  *     tags:
  *       - Tournament
@@ -567,8 +567,9 @@ tournamentRouter.get("/:id/scores", tournamentController.allPlayersScores);
  *         description: Tournoi non trouvé.
  */
 tournamentRouter.get(
-	"/:id/current-round-matches",
+	"/:id/match/current",
 	tournamentController.getCurrentRoundMatches,
 );
 
+tournamentRouter.get("/:id/round/:round", tournamentController.getRoundMatches);
 export default tournamentRouter;

@@ -298,99 +298,131 @@ describe("Tournament Controller", () => {
 		});
 	});
 
-	describe("getCurrentRoundMatches", () => {
+	describe("getRoundMatches - round 2", () => {
 		it("should return current matches of the round with 200", async () => {
 			const mockData = {
-				currentRound: 2,
+				round: 1,
 				matches: [
 					{
-						id: "ecd6a828-5d33-409a-a30d-043a5c990b72",
-						round: 2,
+						id: "d8f09d33-2e4e-409a-9a4c-4431de5d5a54",
+						round: 1,
 						result: null,
-						createdAt: "2026-02-26T13:16:56.539Z",
-						updatedAt: "2026-02-26T13:16:56.539Z",
+						createdAt: new Date("2026-03-22T12:34:59.275Z"),
+						updatedAt: new Date("2026-03-22T12:34:59.275Z"),
 						tournamentId: 1,
-						whitePlayerId: "3790377b-698c-4bf6-9b9f-0fc5f13b2548",
-						blackPlayerId: "eded56ad-12f2-4243-b689-413a8922f34d",
+						whitePlayerId: "ff553b65-33c8-4346-9a32-b48aa1d8e2b2",
+						blackPlayerId: "f484e2d3-e0c0-4fb2-9608-b19799428dea",
 						whitePlayer: {
-							id: "3790377b-698c-4bf6-9b9f-0fc5f13b2548",
-							username: "Maxime",
-							email: "maxime@checkmate.local",
+							id: "ff553b65-33c8-4346-9a32-b48aa1d8e2b2",
+							username: "joueur6",
+							email: "joueur6@user.local",
 							password:
-								"$2b$13$jIb4XSG//VLrsA.sEHQ4f.LM3gWfO3Ja8m9icqvKAFcTP0ihZlmqa",
+								"$2b$13$N9wHWfoiCrp0//hOpoJY3uJwxFOAV8BptozC2FgeC92tawhl6OLrq",
 							birthdate: "2010-03-10",
 							gender: "M",
 							elo: 1100,
 							role: "user",
-							createdAt: "2026-02-26T13:16:49.052Z",
-							updatedAt: "2026-02-26T13:16:49.052Z",
+							createdAt: new Date("2026-03-22T12:22:49.290Z"),
+							updatedAt: new Date("2026-03-22T12:22:49.290Z"),
 						},
 						blackPlayer: {
-							id: "eded56ad-12f2-4243-b689-413a8922f34d",
-							username: "john_doe",
-							email: "john@user.local",
+							id: "f484e2d3-e0c0-4fb2-9608-b19799428dea",
+							username: "joueur2",
+							email: "joueur2@user.local",
 							password:
-								"$2b$13$wrzsXoN/MbVu6HKtPiKH7uXbQ8xzOHhW7ru0EDFlg4lK4GuLeen86",
-							birthdate: "1990-05-15",
-							gender: "M",
-							elo: 1200,
-							role: "user",
-							createdAt: "2026-02-26T13:16:47.386Z",
-							updatedAt: "2026-02-26T13:16:47.386Z",
-						},
-					},
-					{
-						id: "2dd42b64-ca9a-4032-85c8-c33373b49277",
-						round: 2,
-						result: null,
-						createdAt: "2026-02-26T13:16:56.539Z",
-						updatedAt: "2026-02-26T13:16:56.539Z",
-						tournamentId: 1,
-						whitePlayerId: "ca71a848-04a0-4c8c-bdc4-c30b838fdc99",
-						blackPlayerId: "748fe240-0a5f-4c8f-bbb2-990981411e96",
-						whitePlayer: {
-							id: "ca71a848-04a0-4c8c-bdc4-c30b838fdc99",
-							username: "jane_smith",
-							email: "jane@checkmate.local",
-							password:
-								"$2b$13$DoZpIosOqLxSai0EOINrDOmXGsoe0ulgTwRXwysHRlm9N4sB9usAK",
+								"$2b$13$XzNvOx8k2Oqz3a8Rh2Gj8eJmT8GQQsO7KLM3L5ZHV3YlS/tES1kL2",
 							birthdate: "1995-10-20",
 							gender: "F",
 							elo: 1600,
 							role: "user",
-							createdAt: "2026-02-26T13:16:47.942Z",
-							updatedAt: "2026-02-26T13:16:47.942Z",
+							createdAt: new Date("2026-03-22T12:22:46.964Z"),
+							updatedAt: new Date("2026-03-22T12:22:46.964Z"),
+						},
+					},
+					{
+						id: "703eec15-3510-44d4-b7f4-7c90d15e8163",
+						round: 1,
+						result: null,
+						createdAt: new Date("2026-03-22T12:34:59.275Z"),
+						updatedAt: new Date("2026-03-22T12:34:59.275Z"),
+						tournamentId: 1,
+						whitePlayerId: "47f42555-17c6-44f6-9e53-87a2c351e26a",
+						blackPlayerId: "30a5de51-ad99-404a-b778-283d826d0de5",
+						whitePlayer: {
+							id: "47f42555-17c6-44f6-9e53-87a2c351e26a",
+							username: "joueur1",
+							email: "joueur1@user.local",
+							password:
+								"$2b$13$pQV3KNhulBmXcJhLsM7TS.LE58wRSvlHob8XG9VptZX6UKtYjVXW6",
+							birthdate: "1990-05-15",
+							gender: "M",
+							elo: 1200,
+							role: "user",
+							createdAt: new Date("2026-03-22T12:22:46.333Z"),
+							updatedAt: new Date("2026-03-22T12:22:46.333Z"),
 						},
 						blackPlayer: {
-							id: "748fe240-0a5f-4c8f-bbb2-990981411e96",
-							username: "timmy",
-							email: "timmy@checkmate.local",
+							id: "30a5de51-ad99-404a-b778-283d826d0de5",
+							username: "joueur3",
+							email: "joueur3@user.local",
 							password:
-								"$2b$13$dbp3b6HOTf7N.KVgtR7khebFCwi7nroB0LnhCXueGr/59IMRbA51u",
+								"$2b$13$CA1MpcSvdk9scV090wjk7uTnoEeHtbYpvRfLM5IUgArKGyPDCKkQG",
 							birthdate: "2010-03-10",
 							gender: "M",
 							elo: 1100,
 							role: "user",
-							createdAt: "2026-02-26T13:16:48.497Z",
-							updatedAt: "2026-02-26T13:16:48.497Z",
+							createdAt: new Date("2026-03-22T12:22:47.580Z"),
+							updatedAt: new Date("2026-03-22T12:22:47.580Z"),
+						},
+					},
+					{
+						id: "0555ffb3-d0b6-4f00-bd0b-6b8d3a20420d",
+						round: 1,
+						result: null,
+						createdAt: new Date("2026-03-22T12:34:59.275Z"),
+						updatedAt: new Date("2026-03-22T12:34:59.275Z"),
+						tournamentId: 1,
+						whitePlayerId: "ebc7fe71-4e99-4431-8508-5e6427830e55",
+						blackPlayerId: "d59c771e-2396-4cc9-939a-0576b9307c7a",
+						whitePlayer: {
+							id: "ebc7fe71-4e99-4431-8508-5e6427830e55",
+							username: "joueur4",
+							email: "joueur4@user.local",
+							password:
+								"$2b$13$xNmNVDxVMrDi5Ip7bqBZee/TVR2p9m3daBbjufv.UJuVVFyhqwdzC",
+							birthdate: "2010-03-10",
+							gender: "M",
+							elo: 1100,
+							role: "user",
+							createdAt: new Date("2026-03-22T12:22:48.147Z"),
+							updatedAt: new Date("2026-03-22T12:22:48.147Z"),
+						},
+						blackPlayer: {
+							id: "d59c771e-2396-4cc9-939a-0576b9307c7a",
+							username: "joueur5",
+							email: "joueur5@user.local",
+							password:
+								"$2b$13$1lscUQk4Zn53GlEHw3DFquNJs05yK8wRu38ry./9TxMK8PebBECni",
+							birthdate: "2010-03-10",
+							gender: "M",
+							elo: 1100,
+							role: "user",
+							createdAt: new Date("2026-03-22T12:22:48.735Z"),
+							updatedAt: new Date("2026-03-22T12:22:48.735Z"),
 						},
 					},
 				],
 			};
-			tournamentService.getCurrentRoundMatches.mockResolvedValue(
-				mockData,
-			);
+			tournamentService.getRoundMatches.mockResolvedValue(mockData);
 
 			const response = await request(app).get(
 				"/tournament/1/matches/current-round",
 			);
 
 			expect(response.status).toBe(200);
-			expect(response.body.data).toHaveProperty("currentRound", 2);
-			expect(response.body.data.matches).toHaveLength(2);
-			expect(
-				tournamentService.getCurrentRoundMatches,
-			).toHaveBeenCalledWith(1);
+			expect(response.body.data).toHaveProperty("round", 1);
+			expect(response.body.data.matches).toHaveLength(3);
+			expect(tournamentService.getRoundMatches).toHaveBeenCalledWith(1);
 		});
 	});
 });

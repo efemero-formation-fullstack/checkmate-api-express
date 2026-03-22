@@ -211,20 +211,6 @@ const tournamentService = {
 					as: "players",
 					through: { attributes: [] }, // to exclude the join table attributes
 				},
-				{
-					model: db.Match,
-					as: "matches",
-					include: [
-						{
-							model: db.Member,
-							as: "whitePlayer",
-						},
-						{
-							model: db.Member,
-							as: "blackPlayer",
-						},
-					],
-				},
 			],
 		});
 		if (!tournament) {
@@ -250,8 +236,6 @@ const tournamentService = {
 			}
 		}
 
-		// order matches by round
-		tournament.matches.sort((a, b) => a.round - b.round);
 		return tournament;
 	},
 
@@ -439,7 +423,7 @@ const tournamentService = {
 		return scores.sort((a, b) => b.score - a.score);
 	},
 
-	getCurrentRoundMatches: async tournamentId => {
+	getRoundMatches: async (tournamentId, round = null) => {
 		const tournament = await db.Tournament.findByPk(tournamentId);
 		if (!tournament) {
 			throw new TournamentNotFoundError();
@@ -449,8 +433,10 @@ const tournamentService = {
 			throw new TournamentNotStartedError();
 		}
 
+		const targetRound = round || tournament.currentRound;
+
 		const matches = await tournament.getMatches({
-			where: { round: tournament.currentRound },
+			where: { round: targetRound },
 			include: [
 				{
 					model: db.Member,
@@ -463,7 +449,7 @@ const tournamentService = {
 			],
 		});
 
-		return { currentRound: tournament.currentRound, matches };
+		return { round: targetRound, matches };
 	},
 };
 

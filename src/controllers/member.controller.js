@@ -1,6 +1,6 @@
 import { sendTemplatedEmail } from "../services/mail.service.js";
 import memberService from "../services/member.service.js";
-import { MemberDto } from "../dtos/member.dto.js";
+import { MemberDto, MemberListingDto } from "../dtos/member.dto.js";
 
 const memberController = {
 	register: async (req, res) => {
@@ -30,22 +30,59 @@ const memberController = {
 	},
 	getConsumer: async (req, res) => {
 		const consumer = await memberService.getById(req.user.id);
-		res.status(200).send(new MemberDto(consumer));
+		res.status(200).send({ data: new MemberDto(consumer) });
 	},
 	getById: async (req, res) => {
 		const member = await memberService.getById(req.params.id);
-		res.status(200).send(new MemberDto(member));
+		res.status(200).send({ data: new MemberDto(member) });
 	},
 	updateConsumer: async (req, res) => {
 		const updatedMember = await memberService.update(req.user.id, req.data);
-		res.status(200).send(new MemberDto(updatedMember));
+		res.status(200).send({ data: new MemberDto(updatedMember) });
 	},
 	updateById: async (req, res) => {
 		const updatedMember = await memberService.update(
 			req.params.id,
 			req.data,
 		);
-		res.status(200).send(new MemberDto(updatedMember));
+		res.status(200).send({ data: new MemberDto(updatedMember) });
+	},
+	getAll: async (req, res) => {
+		const {
+			username,
+			email,
+			birthdate,
+			gender,
+			elo,
+			page,
+			limit,
+			sortBy,
+			sortOrder,
+		} = req.validatedQuery;
+
+		const filter = {
+			username,
+			email,
+			birthdate,
+			gender,
+			elo,
+		};
+
+		const pagination = {
+			page,
+			limit,
+			sortBy,
+			sortOrder,
+		};
+
+		const { members, count } = await memberService.getAll(
+			filter,
+			pagination,
+		);
+		res.status(200).send({
+			data: members.map(member => new MemberListingDto(member)),
+			total: count,
+		});
 	},
 };
 

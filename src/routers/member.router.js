@@ -2,8 +2,10 @@ import { Router } from "express";
 import {
 	bodyValidator,
 	paramValidator,
+	queryValidator,
 } from "../middlewares/validator.middleware.js";
 import {
+	getAllValidator,
 	getByIdValidator,
 	registerValidator,
 	updateValidator,
@@ -50,6 +52,47 @@ memberRouter.post(
 	connected(["admin"]),
 	bodyValidator(registerValidator),
 	memberController.register,
+);
+
+/**
+ * @openapi
+ * /member:
+ *   get:
+ *     tags:
+ *       - Member
+ *     summary: Récupérer tous les membres
+ *     description: Permet à un administrateur de récupérer tous les membres.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/UsernameFilterParam'
+ *       - $ref: '#/components/parameters/EmailFilterParam'
+ *       - $ref: '#/components/parameters/BirthdateFilterParam'
+ *       - $ref: '#/components/parameters/GenderFilterParam'
+ *       - $ref: '#/components/parameters/EloFilterParam'
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
+ *       - $ref: '#/components/parameters/SortByParam'
+ *       - $ref: '#/components/parameters/SortOrderParam'
+ *     responses:
+ *       200:
+ *         description: Succès - Les membres ont été récupérés avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MemberListingSchema'
+ *       401:
+ *         description: Non autorisé - L'utilisateur n'est pas connecté ou le token est invalide.
+ *       403:
+ *         description: Interdit - L'utilisateur n'a pas les droits nécessaires (admin requis).
+ *       500:
+ *         description: Erreur serveur interne.
+ */
+memberRouter.get(
+	"/",
+	connected(["admin"]),
+	queryValidator(getAllValidator),
+	memberController.getAll,
 );
 
 /**

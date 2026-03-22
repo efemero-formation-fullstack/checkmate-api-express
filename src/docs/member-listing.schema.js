@@ -2,7 +2,7 @@
  * @openapi
  * components:
  *   schemas:
- *     MemberSchema:
+ *     MemberListingSchema:
  *       type: object
  *       properties:
  *         id:
@@ -13,10 +13,6 @@
  *           type: string
  *           description: Le nom d'utilisateur du membre.
  *           example: "JohnDoe"
- *         email:
- *           type: string
- *           description: L'adresse email du membre.
- *           example: "john.doe@example.com"
  *         birthDate:
  *           type: string
  *           format: date
@@ -30,8 +26,4 @@
  *           type: integer
  *           description: Le score ELO du membre.
  *           example: 1500
- *         role:
- *           type: string
- *           description: Le rôle du membre (ex. admin, user).
- *           example: "member"
  */

@@ -1,16 +1,17 @@
 import bcrypt from "bcrypt";
-import db from "../database/index.js";
+import { Op } from "sequelize";
 import {
 	EmailAlreadyExistsError,
 	InvalidCredentialError,
 	MemberNotFoundError,
 	UsernameAlreadyExistsError,
 } from "../custom-errors/member.error.js";
+import db from "../database/index.js";
 
 const { ENCRYPTION_ROUND } = process.env;
 
 const memberService = {
-	create: async data => {
+	create: async (data) => {
 		// check if the email already exists
 		const existingUser = await db.Member.findOne({
 			where: { email: data.email },
@@ -28,10 +29,7 @@ const memberService = {
 		}
 
 		// hash the password
-		const hashedPassword = await bcrypt.hash(
-			data.password,
-			+ENCRYPTION_ROUND,
-		);
+		const hashedPassword = await bcrypt.hash(data.password, +ENCRYPTION_ROUND);
 		data.password = hashedPassword;
 
 		// create the user
@@ -39,13 +37,14 @@ const memberService = {
 
 		return createdMember;
 	},
-	login: async (username, email, password) => {
+	login: async (login, password) => {
+		console.log({ login, password });
 		let member = null;
-		if (username) {
-			member = await db.Member.findOne({ where: { username } });
-		} else {
-			member = await db.Member.findOne({ where: { email } });
-		}
+		member = await db.Member.findOne({
+			where: {
+				[Op.or]: [{ username: login }, { email: login }],
+			},
+		});
 
 		if (!member) {
 			throw new InvalidCredentialError();
@@ -58,7 +57,7 @@ const memberService = {
 
 		return member;
 	},
-	getById: async id => {
+	getById: async (id) => {
 		const member = await db.Member.findOne({ where: { id } });
 		if (!member) {
 			throw new MemberNotFoundError();

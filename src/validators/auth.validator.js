@@ -1,7 +1,6 @@
 import z from "zod";
 
 export const loginValidator = z.object({
-	username: z.string().optional(),
-	email: z.email().optional(),
+	login: z.string().optional(),
 	password: z.string(),
 });

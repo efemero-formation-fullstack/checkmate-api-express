@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { Op } from "sequelize";
 import { MemberNotFoundError } from "../custom-errors/member.error.js";
 import {
 	PlayerAlreadyRegisteredError,
@@ -9,7 +10,6 @@ import {
 	TournamentNotFoundError,
 } from "../custom-errors/tournament.error.js";
 import db from "../database/index.js";
-import { Op } from "sequelize";
 
 export const isMemberRegisteredToTournament = async (
 	tournamentId,
@@ -61,14 +61,14 @@ export const canMemberRegisterToTournament = async (tournamentId, memberId) => {
 	if (tournamentCategories.length) {
 		// get the minimum and maximum age of the tournament's categories
 		const minAge = Math.min(
-			...tournamentCategories.map(category => category.minAge),
+			...tournamentCategories.map((category) => category.minAge),
 		);
 		const maxAge = Math.max(
-			...tournamentCategories.map(category => category.maxAge),
+			...tournamentCategories.map((category) => category.maxAge),
 		);
 
 		// compute the player's age
-		const playerAge = dayjs().diff(dayjs(player.birthDate), "year");
+		const playerAge = dayjs().diff(dayjs(player.birthdate), "year");
 		if (playerAge < minAge || playerAge > maxAge) {
 			throw new PlayerIsOutOfTheCategoriesError();
 		}
@@ -109,7 +109,7 @@ export const computePlayerScoreInATournament = async (
 	let defeat = 0;
 	let bye = 0;
 
-	matches.forEach(match => {
+	matches.forEach((match) => {
 		if (match.whitePlayerId === playerId) {
 			if (match.result === "white_win") {
 				victory++;

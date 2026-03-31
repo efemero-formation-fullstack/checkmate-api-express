@@ -8,7 +8,7 @@ export class MemberListingDto {
 	constructor(member) {
 		this.id = member.id;
 		this.username = member.username;
-		this.birthDate = member.birth;
+		this.birthDate = member.birthdate;
 		this.gender = member.gender;
 		this.elo = member.elo;
 	}

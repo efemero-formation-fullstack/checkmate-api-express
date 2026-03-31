@@ -1,4 +1,6 @@
 import { Router } from "express";
+import memberController from "../controllers/member.controller.js";
+import { connected } from "../middlewares/auth.middleware.js";
 import {
 	bodyValidator,
 	paramValidator,
@@ -10,8 +12,6 @@ import {
 	registerValidator,
 	updateValidator,
 } from "../validators/member.validator.js";
-import memberController from "../controllers/member.controller.js";
-import { connected } from "../middlewares/auth.middleware.js";
 
 const memberRouter = Router();
 
@@ -239,7 +239,7 @@ memberRouter.put(
  */
 memberRouter.put(
 	"/:id",
-	connected(),
+	connected(["admin"]),
 	paramValidator(getByIdValidator),
 	bodyValidator(updateValidator),
 	memberController.updateById,

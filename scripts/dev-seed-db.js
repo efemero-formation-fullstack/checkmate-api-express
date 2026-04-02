@@ -104,7 +104,7 @@ const seedDatabase = async () => {
 			name: "tournament1",
 			minPlayers: 2,
 			maxPlayers: 32,
-			endRegistrationDate: "2026-03-30",
+			endRegistrationDate: "2026-06-30",
 			categories: [1, 2, 3],
 			elo: 1000,
 		});

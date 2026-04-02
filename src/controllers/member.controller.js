@@ -73,7 +73,7 @@ const memberController = {
 		};
 
 		const { members, count } = await memberService.getAll(filter, pagination);
-		res.status(200).send({
+		res.status(200).json({
 			data: members.map((member) => new MemberListingDto(member)),
 			total: count,
 		});

@@ -102,8 +102,8 @@ const memberService = {
 		if (filter.email) {
 			where.email = filter.email;
 		}
-		if (filter.birthDate) {
-			where.birthDate = filter.birthDate;
+		if (filter.birthdate) {
+			where.birthdate = filter.birthdate;
 		}
 		if (filter.gender) {
 			where.gender = filter.gender;

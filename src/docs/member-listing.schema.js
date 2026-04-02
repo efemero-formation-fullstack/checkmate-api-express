@@ -13,7 +13,7 @@
  *           type: string
  *           description: Le nom d'utilisateur du membre.
  *           example: "JohnDoe"
- *         birthDate:
+ *         birthdate:
  *           type: string
  *           format: date
  *           description: La date de naissance au format ISO.

@@ -1,14 +1,14 @@
 export class MemberListingDto {
 	id;
 	username;
-	birthDate;
+	birthdate;
 	gender;
 	elo;
 
 	constructor(member) {
 		this.id = member.id;
 		this.username = member.username;
-		this.birthDate = member.birthdate;
+		this.birthdate = member.birthdate;
 		this.gender = member.gender;
 		this.elo = member.elo;
 	}
@@ -18,16 +18,16 @@ export class MemberDto {
 	id;
 	username;
 	email;
-	birthDate;
+	birthdate;
 	gender;
-	el;
+	elo;
 	role;
 
 	constructor(member) {
 		this.id = member.id;
 		this.username = member.username;
 		this.email = member.email;
-		this.birthDate = member.birth;
+		this.birthdate = member.birthdate;
 		this.gender = member.gender;
 		this.elo = member.elo;
 		this.role = member.role;

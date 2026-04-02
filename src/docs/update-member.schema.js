@@ -13,7 +13,7 @@
  *           type: string
  *           description: L'adresse email du membre.
  *           example: "[EMAIL_ADDRESS]"
- *         birthDate:
+ *         birthdate:
  *           type: string
  *           format: date
  *           description: La date de naissance au format ISO.
